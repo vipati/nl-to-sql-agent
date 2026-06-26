@@ -36,6 +36,7 @@ Next milestones:
 uv sync
 uv run pytest
 uv run nl-to-sql "show total revenue by customer" --execute
+uv run nl-to-sql eval
 uv run uvicorn nl_to_sql_agent.api:app --reload
 ```
 
@@ -52,3 +53,13 @@ ORDER BY total_revenue DESC
 ```
 
 The `/query` API also executes valid SQL against the seeded DuckDB sample database and returns columns, rows, and row count.
+
+## Evaluation
+
+Run the evaluation suite:
+
+```powershell
+uv run nl-to-sql eval
+```
+
+Current metrics measure generation success, SQL validity, execution success, and result accuracy against `data/eval/questions.jsonl`.

@@ -1,0 +1,4 @@
+{"id":"revenue_by_customer","question":"show total revenue by customer","expected_columns":["name","total_revenue"],"expected_rows":[{"name":"Jordan Patel","total_revenue":330.25},{"name":"Avery Chen","total_revenue":155.5},{"name":"Morgan Rivera","total_revenue":42.75}],"difficulty":"easy"}
+{"id":"orders_by_status","question":"count orders by status","expected_columns":["status","order_count"],"expected_rows":[{"status":"completed","order_count":3},{"status":"refunded","order_count":1},{"status":"pending","order_count":1}],"difficulty":"easy"}
+{"id":"list_customers","question":"list customers","expected_columns":["customer_id","name","email"],"expected_rows":[{"customer_id":1,"name":"Avery Chen","email":"avery@example.com"},{"customer_id":2,"name":"Jordan Patel","email":"jordan@example.com"},{"customer_id":3,"name":"Morgan Rivera","email":"morgan@example.com"}],"difficulty":"easy"}
+

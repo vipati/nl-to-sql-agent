@@ -1,6 +1,7 @@
 import typer
 
 from nl_to_sql_agent.database import execute_sql
+from nl_to_sql_agent.evaluation import run_evaluation
 from nl_to_sql_agent.generator import generate_sql
 from nl_to_sql_agent.schema import ecommerce_schema
 from nl_to_sql_agent.validator import validate_sql
@@ -24,6 +25,21 @@ def generate(question: str, execute: bool = typer.Option(False, help="Run genera
         typer.echo(f"Rows: {result.row_count}")
         for row in result.rows:
             typer.echo(row)
+
+
+@app.command(name="eval")
+def evaluate() -> None:
+    """Run the NL-to-SQL evaluation suite."""
+    report = run_evaluation()
+    typer.echo(f"Total cases: {report.total}")
+    typer.echo(f"Generation success: {report.generation_success_rate:.0%}")
+    typer.echo(f"SQL validity: {report.sql_validity_rate:.0%}")
+    typer.echo(f"Execution success: {report.execution_success_rate:.0%}")
+    typer.echo(f"Result accuracy: {report.result_accuracy_rate:.0%}")
+
+    failed = [case for case in report.cases if not case.correct_result]
+    if failed:
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":
