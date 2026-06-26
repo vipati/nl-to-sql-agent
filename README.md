@@ -91,3 +91,5 @@ uv run streamlit run app/streamlit_app.py
 ```
 
 The demo shows the natural-language question, generated SQL, repair status, execution status, and result table.
+
+![Streamlit demo](docs/assets/streamlit-demo.png)
