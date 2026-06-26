@@ -41,6 +41,7 @@ uv run nl-to-sql "show total revenue by customer" --execute
 uv run nl-to-sql eval
 uv run nl-to-sql repair "SELECT customer_name, SUM(amount) FROM orders JOIN customers USING (customer_id) GROUP BY customer_name"
 uv run uvicorn nl_to_sql_agent.api:app --reload
+uv run streamlit run app/streamlit_app.py
 ```
 
 ## Example
@@ -70,3 +71,13 @@ Current metrics measure generation success, SQL validity, execution success, and
 ## Generation Providers
 
 The default generator is deterministic for reproducible tests. The provider interface in `src/nl_to_sql_agent/providers.py` lets the project add hosted LLMs later without changing validation, execution, or evaluation contracts.
+
+## Demo
+
+Run the Streamlit demo:
+
+```powershell
+uv run streamlit run app/streamlit_app.py
+```
+
+The demo shows the natural-language question, generated SQL, repair status, execution status, and result table.

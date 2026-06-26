@@ -8,7 +8,9 @@ dependencies = [
     "duckdb>=1.4.0",
     "fastapi>=0.125.0",
     "pydantic>=2.12.0",
+    "pandas>=2.3.0",
     "sqlglot>=28.0.0",
+    "streamlit>=1.52.0",
     "typer>=0.20.0",
     "uvicorn>=0.38.0",
 ]
