@@ -17,6 +17,6 @@ def test_query() -> None:
     body = response.json()
     assert body["valid"] is True
     assert "total_revenue" in body["sql"]
-    assert body["execution"]["row_count"] == 3
-    assert body["execution"]["rows"][0]["name"] == "Jordan Patel"
-    assert body["execution"]["rows"][0]["total_revenue"] == 330.25
+    assert body["execution"]["execution"]["row_count"] == 3
+    assert body["execution"]["execution"]["rows"][0]["name"] == "Jordan Patel"
+    assert body["execution"]["execution"]["rows"][0]["total_revenue"] == 330.25

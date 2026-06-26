@@ -9,6 +9,7 @@ This project demonstrates:
 - schema-aware query generation
 - SQL validation before execution
 - provider interface for LLM-backed generation
+- conservative SQL repair loop
 - an API surface suitable for product integration
 - testable AI application architecture
 - a path from deterministic baseline to LLM-backed agent
@@ -38,6 +39,7 @@ uv sync
 uv run pytest
 uv run nl-to-sql "show total revenue by customer" --execute
 uv run nl-to-sql eval
+uv run nl-to-sql repair "SELECT customer_name, SUM(amount) FROM orders JOIN customers USING (customer_id) GROUP BY customer_name"
 uv run uvicorn nl_to_sql_agent.api:app --reload
 ```
 

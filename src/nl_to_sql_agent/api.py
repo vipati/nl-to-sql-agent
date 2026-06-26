@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from nl_to_sql_agent.database import QueryExecutionResult, execute_sql
 from nl_to_sql_agent.generator import generate_sql
+from nl_to_sql_agent.repair import RepairAttempt, execute_with_repair
 from nl_to_sql_agent.schema import ecommerce_schema
-from nl_to_sql_agent.validator import validate_sql
 
 app = FastAPI(title="NL-to-SQL Agent", version="0.1.0")
 
@@ -17,7 +16,9 @@ class QueryResponse(BaseModel):
     question: str
     sql: str
     valid: bool
-    execution: QueryExecutionResult | None = None
+    repaired_sql: str | None = None
+    repaired: bool = False
+    execution: RepairAttempt | None = None
     error: str | None = None
 
 
@@ -29,12 +30,13 @@ def health() -> dict[str, str]:
 @app.post("/query", response_model=QueryResponse)
 def query(request: QueryRequest) -> QueryResponse:
     sql = generate_sql(request.question, ecommerce_schema())
-    validation = validate_sql(sql)
-    execution = execute_sql(sql) if validation.valid else None
+    execution = execute_with_repair(sql)
     return QueryResponse(
         question=request.question,
         sql=sql,
-        valid=validation.valid,
+        valid=execution.valid,
+        repaired_sql=execution.repaired_sql if execution.changed else None,
+        repaired=execution.changed,
         execution=execution,
-        error=validation.error,
+        error=execution.error,
     )
