@@ -115,7 +115,8 @@ def _run_case(case: EvaluationCase) -> EvaluationCaseResult:
 
 
 def _normalize_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [json.loads(json.dumps(row, sort_keys=True)) for row in rows]
+    normalized = [json.loads(json.dumps(row, sort_keys=True)) for row in rows]
+    return sorted(normalized, key=lambda row: json.dumps(row, sort_keys=True))
 
 
 def _rate(results: list[EvaluationCaseResult], field_name: str) -> float:
@@ -123,4 +124,3 @@ def _rate(results: list[EvaluationCaseResult], field_name: str) -> float:
         return 0.0
     passed = sum(1 for result in results if getattr(result, field_name))
     return passed / len(results)
-

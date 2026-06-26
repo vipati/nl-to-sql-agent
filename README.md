@@ -8,6 +8,7 @@ This project demonstrates:
 
 - schema-aware query generation
 - SQL validation before execution
+- provider interface for LLM-backed generation
 - an API surface suitable for product integration
 - testable AI application architecture
 - a path from deterministic baseline to LLM-backed agent
@@ -63,3 +64,7 @@ uv run nl-to-sql eval
 ```
 
 Current metrics measure generation success, SQL validity, execution success, and result accuracy against `data/eval/questions.jsonl`.
+
+## Generation Providers
+
+The default generator is deterministic for reproducible tests. The provider interface in `src/nl_to_sql_agent/providers.py` lets the project add hosted LLMs later without changing validation, execution, or evaluation contracts.

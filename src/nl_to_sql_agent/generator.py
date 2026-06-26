@@ -1,13 +1,21 @@
+from nl_to_sql_agent.providers import SQLGenerationProvider, build_prompt
 from nl_to_sql_agent.schema import DatabaseSchema
 
 
-def generate_sql(question: str, schema: DatabaseSchema) -> str:
+def generate_sql(
+    question: str,
+    schema: DatabaseSchema,
+    provider: SQLGenerationProvider | None = None,
+) -> str:
     """Generate SQL using a deterministic baseline.
 
     This baseline is intentionally simple and testable. Later milestones can swap
     this function for an LLM-backed generator while keeping validation and API
     contracts stable.
     """
+    if provider:
+        return provider.generate(build_prompt(question, schema))
+
     normalized = question.lower().strip()
     table_names = {table.name for table in schema.tables}
 
@@ -43,4 +51,3 @@ def _require_tables(available: set[str], required: set[str]) -> None:
     missing = sorted(required - available)
     if missing:
         raise ValueError(f"Schema is missing required tables: {', '.join(missing)}")
-
