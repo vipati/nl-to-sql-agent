@@ -25,6 +25,7 @@ Build a recruiter-friendly NL-to-SQL system that shows practical AI engineering:
 Completed:
 
 - Milestone 1 baseline generator.
+- Milestone 2 DuckDB seed data and SQL execution.
 - FastAPI `/health` and `/query` endpoints.
 - CLI command for generating SQL.
 - Unit tests for generator and API behavior.
@@ -32,7 +33,7 @@ Completed:
 
 Next:
 
-- Build Milestone 2 with DuckDB seed data and SQL execution.
+- Build Milestone 3 with an evaluation set and execution-accuracy metrics.
 
 ## Resume Bullets
 

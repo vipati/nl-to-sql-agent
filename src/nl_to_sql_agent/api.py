@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
+from nl_to_sql_agent.database import QueryExecutionResult, execute_sql
 from nl_to_sql_agent.generator import generate_sql
 from nl_to_sql_agent.schema import ecommerce_schema
 from nl_to_sql_agent.validator import validate_sql
@@ -16,6 +17,7 @@ class QueryResponse(BaseModel):
     question: str
     sql: str
     valid: bool
+    execution: QueryExecutionResult | None = None
     error: str | None = None
 
 
@@ -28,10 +30,11 @@ def health() -> dict[str, str]:
 def query(request: QueryRequest) -> QueryResponse:
     sql = generate_sql(request.question, ecommerce_schema())
     validation = validate_sql(sql)
+    execution = execute_sql(sql) if validation.valid else None
     return QueryResponse(
         question=request.question,
         sql=sql,
         valid=validation.valid,
+        execution=execution,
         error=validation.error,
     )
-

@@ -35,7 +35,7 @@ Next milestones:
 ```powershell
 uv sync
 uv run pytest
-uv run nl-to-sql "show total revenue by customer"
+uv run nl-to-sql "show total revenue by customer" --execute
 uv run uvicorn nl_to_sql_agent.api:app --reload
 ```
 
@@ -51,3 +51,4 @@ GROUP BY customers.name
 ORDER BY total_revenue DESC
 ```
 
+The `/query` API also executes valid SQL against the seeded DuckDB sample database and returns columns, rows, and row count.
