@@ -26,6 +26,11 @@ Completed:
 
 - Milestone 1 baseline generator.
 - Milestone 2 DuckDB seed data and SQL execution.
+- Milestone 3 evaluation set and execution-accuracy metrics.
+- Milestone 4 provider interface for LLM-backed generation.
+- Milestone 5 SQL repair loop.
+- Milestone 6 Streamlit demo.
+- Milestone 7 Dockerfile, CI, architecture docs, and README polish.
 - FastAPI `/health` and `/query` endpoints.
 - CLI command for generating SQL.
 - Unit tests for generator and API behavior.
@@ -33,7 +38,7 @@ Completed:
 
 Next:
 
-- Build Milestone 3 with an evaluation set and execution-accuracy metrics.
+- Add screenshots, publish privately to GitHub, then prepare a public release.
 
 ## Resume Bullets
 

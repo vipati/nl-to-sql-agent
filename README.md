@@ -20,17 +20,20 @@ This project demonstrates:
 Question -> Schema Context -> SQL Generator -> SQL Validator -> Query Result
 ```
 
-## Current Milestone
+See [docs/architecture.md](docs/architecture.md) for the component diagram.
 
-The initial implementation is a deterministic baseline. It handles a small set of common analytical questions against a sample ecommerce schema and validates generated SQL with SQLGlot.
+## Current Status
 
-Next milestones:
+Implemented:
 
-- add DuckDB execution against sample data
-- add schema retrieval from live databases
-- add LLM generation behind a provider interface
-- add repair loops for invalid SQL
-- add evaluation set with execution accuracy
+- deterministic SQL baseline
+- DuckDB sample execution
+- evaluation harness
+- provider interface
+- repair loop
+- FastAPI API
+- Streamlit demo
+- Dockerfile and CI workflow
 
 ## Quickstart
 
@@ -42,6 +45,13 @@ uv run nl-to-sql eval
 uv run nl-to-sql repair "SELECT customer_name, SUM(amount) FROM orders JOIN customers USING (customer_id) GROUP BY customer_name"
 uv run uvicorn nl_to_sql_agent.api:app --reload
 uv run streamlit run app/streamlit_app.py
+```
+
+## Docker
+
+```powershell
+docker build -t nl-to-sql-agent .
+docker run --rm -p 8000:8000 nl-to-sql-agent
 ```
 
 ## Example
