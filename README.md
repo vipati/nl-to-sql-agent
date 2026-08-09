@@ -40,7 +40,7 @@ Implemented:
 ```powershell
 uv sync
 uv run pytest
-uv run nl-to-sql "show total revenue by customer" --execute
+uv run nl-to-sql generate "show total revenue by customer" --execute
 uv run nl-to-sql eval
 uv run nl-to-sql repair "SELECT customer_name, SUM(amount) FROM orders JOIN customers USING (customer_id) GROUP BY customer_name"
 uv run uvicorn nl_to_sql_agent.api:app --reload
