@@ -1,0 +1,40 @@
+{"id": "drop_table", "expect": "blocked", "category": "ddl", "sql": "DROP TABLE customers"}
+{"id": "create_table_as", "expect": "blocked", "category": "ddl", "sql": "CREATE TABLE stolen AS SELECT * FROM customers"}
+{"id": "alter_table", "expect": "blocked", "category": "ddl", "sql": "ALTER TABLE customers ADD COLUMN ssn VARCHAR"}
+{"id": "truncate", "expect": "blocked", "category": "dml", "sql": "TRUNCATE orders"}
+{"id": "delete", "expect": "blocked", "category": "dml", "sql": "DELETE FROM orders"}
+{"id": "update", "expect": "blocked", "category": "dml", "sql": "UPDATE products SET unit_price = 0"}
+{"id": "insert", "expect": "blocked", "category": "dml", "sql": "INSERT INTO customers VALUES (99, 'Mallory', 'm@example.com', 'USA', DATE '2025-01-01')"}
+{"id": "stacked_drop", "expect": "blocked", "category": "stacked", "sql": "SELECT * FROM customers; DROP TABLE customers"}
+{"id": "stacked_after_comment", "expect": "blocked", "category": "stacked", "sql": "SELECT 1 /* harmless */; DELETE FROM orders"}
+{"id": "stacked_selects", "expect": "blocked", "category": "stacked", "sql": "SELECT 1; SELECT 2"}
+{"id": "cte_delete", "expect": "blocked", "category": "dml", "sql": "WITH gone AS (DELETE FROM orders RETURNING *) SELECT * FROM gone"}
+{"id": "attach", "expect": "blocked", "category": "session", "sql": "ATTACH 'evil.duckdb' AS evil"}
+{"id": "set_option", "expect": "blocked", "category": "session", "sql": "SET enable_external_access = true"}
+{"id": "pragma", "expect": "blocked", "category": "session", "sql": "PRAGMA database_list"}
+{"id": "install_extension", "expect": "blocked", "category": "session", "sql": "INSTALL httpfs"}
+{"id": "load_extension", "expect": "blocked", "category": "session", "sql": "LOAD httpfs"}
+{"id": "copy_out", "expect": "blocked", "category": "file", "sql": "COPY customers TO 'customers.csv'"}
+{"id": "export_database", "expect": "blocked", "category": "file", "sql": "EXPORT DATABASE 'dump'"}
+{"id": "read_csv", "expect": "blocked", "category": "file", "sql": "SELECT * FROM read_csv('/etc/passwd')"}
+{"id": "read_text", "expect": "blocked", "category": "file", "sql": "SELECT content FROM read_text('C:/Windows/win.ini')"}
+{"id": "read_csv_in_subquery", "expect": "blocked", "category": "file", "sql": "SELECT name FROM customers WHERE email IN (SELECT column0 FROM read_csv_auto('leak.csv'))"}
+{"id": "glob_files", "expect": "blocked", "category": "file", "sql": "SELECT * FROM glob('*')"}
+{"id": "sqlite_scan", "expect": "blocked", "category": "file", "sql": "SELECT * FROM sqlite_scan('other.db', 'users')"}
+{"id": "query_function", "expect": "blocked", "category": "dynamic_sql", "sql": "SELECT * FROM query('DROP TABLE customers')"}
+{"id": "getenv", "expect": "blocked", "category": "environment", "sql": "SELECT getenv('PATH')"}
+{"id": "current_setting", "expect": "blocked", "category": "environment", "sql": "SELECT current_setting('threads')"}
+{"id": "duckdb_settings", "expect": "blocked", "category": "catalog", "sql": "SELECT * FROM duckdb_settings()"}
+{"id": "information_schema", "expect": "blocked", "category": "catalog", "sql": "SELECT table_name FROM information_schema.tables"}
+{"id": "pg_catalog", "expect": "blocked", "category": "catalog", "sql": "SELECT name FROM customers UNION SELECT tablename FROM pg_catalog.pg_tables"}
+{"id": "unknown_table", "expect": "blocked", "category": "schema", "sql": "SELECT * FROM users"}
+{"id": "simple_select", "expect": "allowed", "category": "read", "sql": "SELECT name, country FROM customers"}
+{"id": "join_aggregate", "expect": "allowed", "category": "read", "sql": "SELECT c.country, COUNT(*) AS orders FROM orders o JOIN customers c ON c.customer_id = o.customer_id GROUP BY c.country"}
+{"id": "cte", "expect": "allowed", "category": "read", "sql": "WITH totals AS (SELECT order_id, SUM(quantity * unit_price) AS total FROM order_items GROUP BY order_id) SELECT AVG(total) FROM totals"}
+{"id": "window_function", "expect": "allowed", "category": "read", "sql": "SELECT name, category, RANK() OVER (PARTITION BY category ORDER BY unit_price DESC) AS price_rank FROM products"}
+{"id": "correlated_subquery", "expect": "allowed", "category": "read", "sql": "SELECT name FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id)"}
+{"id": "union_all", "expect": "allowed", "category": "read", "sql": "SELECT name FROM customers UNION ALL SELECT name FROM products"}
+{"id": "drop_in_string_literal", "expect": "allowed", "category": "read", "sql": "SELECT name FROM customers WHERE name = 'x''; DROP TABLE customers; --'"}
+{"id": "drop_in_comment", "expect": "allowed", "category": "read", "sql": "SELECT name FROM customers -- ; DROP TABLE customers"}
+{"id": "keyword_alias", "expect": "allowed", "category": "read", "sql": "SELECT status AS \"delete\", COUNT(*) AS \"drop\" FROM orders GROUP BY status"}
+{"id": "trailing_semicolon", "expect": "allowed", "category": "read", "sql": "SELECT COUNT(*) FROM orders;"}

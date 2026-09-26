@@ -1,88 +1,44 @@
-import re
+"""Deterministic repair for wrong identifiers, tried before spending an LLM call.
 
-from pydantic import BaseModel
+Models often get a name slightly wrong: `customer` for `customers`, `order_status` for
+`status`, `stauts` for `status`. When the guard finds an unknown table or column and the
+schema offers exactly one plausible replacement, the name is rewritten in the AST.
+Anything ambiguous is left for the LLM repair step.
+"""
 
-from nl_to_sql_agent.database import QueryExecutionResult, execute_sql
-from nl_to_sql_agent.validator import validate_sql
+from sqlglot import exp
+from sqlglot.errors import SqlglotError
 
-
-class RepairAttempt(BaseModel):
-    original_sql: str
-    repaired_sql: str
-    changed: bool
-    valid: bool
-    executed: bool
-    error: str | None = None
-    execution: QueryExecutionResult | None = None
+from nl_to_sql_agent.guard import UnsafeSQLError, find_schema_issues, parse_single_query
+from nl_to_sql_agent.schema import DatabaseSchema
 
 
-REPAIR_RULES = {
-    "customer_name": "name",
-    "amount": "total_amount",
-    "order_status": "status",
-}
-
-TABLE_REPAIR_RULES = {
-    r"\bcustomer\b": "customers",
-}
-
-
-def repair_sql(sql: str) -> str:
-    repaired = sql
-    for old, new in REPAIR_RULES.items():
-        repaired = repaired.replace(old, new)
-    for pattern, replacement in TABLE_REPAIR_RULES.items():
-        repaired = re.sub(pattern, replacement, repaired)
-    return repaired
-
-
-def execute_with_repair(sql: str) -> RepairAttempt:
-    validation = validate_sql(sql)
-    if validation.valid:
-        try:
-            execution = execute_sql(sql)
-            return RepairAttempt(
-                original_sql=sql,
-                repaired_sql=sql,
-                changed=False,
-                valid=True,
-                executed=True,
-                execution=execution,
-            )
-        except Exception as exc:
-            original_error = str(exc)
-    else:
-        original_error = validation.error
-
-    repaired_sql = repair_sql(sql)
-    repaired_validation = validate_sql(repaired_sql)
-    if not repaired_validation.valid:
-        return RepairAttempt(
-            original_sql=sql,
-            repaired_sql=repaired_sql,
-            changed=repaired_sql != sql,
-            valid=False,
-            executed=False,
-            error=repaired_validation.error or original_error,
-        )
-
+def autofix_identifiers(sql: str, schema: DatabaseSchema) -> str | None:
+    """Return SQL with unambiguous identifier fixes applied, or None if nothing changed."""
     try:
-        execution = execute_sql(repaired_sql)
-    except Exception as exc:
-        return RepairAttempt(
-            original_sql=sql,
-            repaired_sql=repaired_sql,
-            changed=repaired_sql != sql,
-            valid=True,
-            executed=False,
-            error=str(exc),
-        )
+        expression = parse_single_query(sql, schema.dialect)
+    except (SqlglotError, UnsafeSQLError):
+        return None
 
-    return RepairAttempt(
-        original_sql=sql,
-        repaired_sql=repaired_sql,
-        changed=repaired_sql != sql,
-        valid=True,
-        executed=True,
-        execution=execution,
-    )
+    changed = False
+    # Two passes: column checks only run once every table name resolves.
+    for _ in range(2):
+        issues = find_schema_issues(expression, schema)
+        fixable = [issue for issue in issues if len(issue.candidates) == 1]
+        if not fixable:
+            break
+        for issue in fixable:
+            replacement = issue.candidates[0]
+            node = issue.node
+            if isinstance(node, exp.Table):
+                if not node.alias:
+                    # Keep the old name as an alias so qualified references still resolve.
+                    node.set("alias", exp.TableAlias(this=exp.to_identifier(node.name)))
+                node.set("this", exp.to_identifier(replacement))
+            elif isinstance(node, exp.Column):
+                qualifier, _, column = replacement.rpartition(".")
+                node.set("this", exp.to_identifier(column))
+                if qualifier:
+                    node.set("table", exp.to_identifier(qualifier))
+        changed = True
+    return expression.sql(dialect=schema.dialect) if changed else None

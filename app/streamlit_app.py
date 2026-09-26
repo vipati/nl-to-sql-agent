@@ -1,38 +1,89 @@
 import pandas as pd
 import streamlit as st
 
-from nl_to_sql_agent.generator import generate_sql
-from nl_to_sql_agent.repair import execute_with_repair
-from nl_to_sql_agent.schema import ecommerce_schema
+from nl_to_sql_agent.agent import Agent, AgentResult
+from nl_to_sql_agent.config import Settings
+from nl_to_sql_agent.evaluation import load_cases
+from nl_to_sql_agent.schema import format_schema_context
 
 st.set_page_config(page_title="NL-to-SQL Agent", layout="wide")
 
+
+@st.cache_resource
+def get_agent() -> Agent:
+    return Agent.from_settings()
+
+
+@st.cache_data
+def example_questions() -> list[str]:
+    return [case.question for case in load_cases()]
+
+
+def show_result(result: AgentResult) -> None:
+    rows = result.result.row_count if result.result else 0
+    status, attempts, latency, row_count = st.columns(4)
+    status.metric("Status", result.status)
+    attempts.metric("Attempts", len(result.attempts))
+    latency.metric("Latency", f"{result.latency_ms:.0f} ms")
+    row_count.metric("Rows", rows)
+
+    if result.sql:
+        st.code(result.sql, language="sql")
+    if result.error:
+        st.error(result.error)
+
+    if len(result.attempts) > 1 or (result.attempts and not result.attempts[-1].ok):
+        with st.expander("Attempts", expanded=result.status != "ok"):
+            for index, attempt in enumerate(result.attempts, start=1):
+                label = "ok" if attempt.ok else f"{attempt.error_kind} error"
+                st.markdown(f"**{index}. {attempt.stage}**: {label}")
+                st.code(attempt.sql, language="sql")
+                if attempt.error:
+                    st.caption(attempt.error)
+
+    if result.result and result.result.columns:
+        frame = pd.DataFrame(result.result.rows, columns=result.result.columns)
+        st.dataframe(frame, use_container_width=True, hide_index=True)
+        if result.result.truncated:
+            st.caption(f"Showing the first {result.result.row_count} rows.")
+
+
+agent = get_agent()
+settings = Settings.from_env()
+
 st.title("NL-to-SQL Agent")
+st.caption(
+    "Ask questions in plain English. Generated SQL is checked by an AST guard, "
+    "self-corrected on errors, and run on a read-only connection with a timeout and row cap."
+)
 
-question = st.text_input("Question", value="show total revenue by customer")
+with st.sidebar:
+    st.subheader("Configuration")
+    provider = agent.provider.name
+    st.write(f"Provider: `{provider}`" + (f" / `{settings.model}`" if provider != "rules" else ""))
+    st.write(f"Database: `{agent.database.path.name}`")
+    st.write(f"Row cap: {agent.database.max_rows}, timeout: {agent.database.timeout_seconds:g}s")
+    with st.expander("Schema the model sees"):
+        st.code(format_schema_context(agent.database.schema), language="sql")
 
-if st.button("Generate and Run", type="primary"):
-    try:
-        sql = generate_sql(question, ecommerce_schema())
-        attempt = execute_with_repair(sql)
-    except Exception as exc:
-        st.error(str(exc))
-    else:
-        st.subheader("Generated SQL")
-        st.code(sql, language="sql")
+ask_tab, sql_tab = st.tabs(["Ask a question", "Run SQL (try to break it)"])
 
-        if attempt.changed:
-            st.subheader("Repaired SQL")
-            st.code(attempt.repaired_sql, language="sql")
+with ask_tab:
+    examples = example_questions()
+    choice = st.selectbox(
+        "Example questions",
+        examples,
+        index=examples.index("Who are the top 5 customers by total spend?"),
+    )
+    question = st.text_input("Question", value=choice)
+    if question.strip():
+        show_result(agent.ask(question))
 
-        col_valid, col_executed = st.columns(2)
-        col_valid.metric("Valid SQL", "Yes" if attempt.valid else "No")
-        col_executed.metric("Executed", "Yes" if attempt.executed else "No")
-
-        if attempt.error:
-            st.error(attempt.error)
-
-        if attempt.execution:
-            st.subheader("Results")
-            st.dataframe(pd.DataFrame(attempt.execution.rows), use_container_width=True)
-
+with sql_tab:
+    sql = st.text_area(
+        "SQL",
+        value="SELECT name FROM customers; DROP TABLE customers",
+        height=100,
+    )
+    if sql.strip():
+        show_result(agent.run_sql(sql))
