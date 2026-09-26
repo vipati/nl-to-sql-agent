@@ -14,8 +14,8 @@
     "medium": 0.6,
     "hard": 0.0
   },
-  "latency_p50_ms": 17.942000000402913,
-  "latency_p95_ms": 24.529599999368656,
+  "latency_p50_ms": 17.930650001289905,
+  "latency_p95_ms": 21.86489999803598,
   "mean_provider_calls": 1.0,
   "mean_prompt_tokens": 0.0,
   "mean_completion_tokens": 0.0,
@@ -31,7 +31,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 43.604200000118,
+      "latency_ms": 43.53760000230977,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -47,7 +47,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.10019999899668619,
+      "latency_ms": 0.10589999874355271,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -63,7 +63,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 20.549299999402137,
+      "latency_ms": 20.52150000235997,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -79,7 +79,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 20.586499998898944,
+      "latency_ms": 21.30820000093081,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -95,7 +95,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 19.69699999972363,
+      "latency_ms": 18.677000000025146,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -111,7 +111,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 20.370499998534797,
+      "latency_ms": 20.767400001204805,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -127,7 +127,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.09389999831910245,
+      "latency_ms": 0.12799999967683107,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -143,7 +143,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.09990000035031699,
+      "latency_ms": 0.09579999823472463,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -159,7 +159,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 18.068000001221662,
+      "latency_ms": 18.338699999731034,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -175,7 +175,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 18.34700000108569,
+      "latency_ms": 19.085599997197278,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -191,7 +191,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 20.839900000282796,
+      "latency_ms": 20.140299999184208,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -207,7 +207,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 22.5590000009106,
+      "latency_ms": 21.01810000021942,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -223,7 +223,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 24.529599999368656,
+      "latency_ms": 21.86489999803598,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -239,7 +239,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.0940000027185306,
+      "latency_ms": 0.09030000001075678,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -255,7 +255,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.09960000170394778,
+      "latency_ms": 0.10039999688160606,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -271,7 +271,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 20.921700001053978,
+      "latency_ms": 21.111800000653602,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -287,7 +287,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 20.049599999765633,
+      "latency_ms": 19.641899998532608,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -303,7 +303,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 19.06299999973271,
+      "latency_ms": 18.00780000121449,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -319,7 +319,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 17.815999999584164,
+      "latency_ms": 17.85350000136532,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -335,7 +335,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.11610000001383014,
+      "latency_ms": 0.1816000003600493,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -351,7 +351,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.09929999941959977,
+      "latency_ms": 0.2133999987563584,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -367,7 +367,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.10119999933522195,
+      "latency_ms": 0.10339999789721332,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -383,7 +383,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 16.55929999833461,
+      "latency_ms": 16.959900000074413,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -399,7 +399,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 22.365099997841753,
+      "latency_ms": 21.841100002347957,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -415,7 +415,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.10829999882844277,
+      "latency_ms": 0.1052999978128355,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -431,7 +431,7 @@
       "attempts": 1,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 17.05239999864716,
+      "latency_ms": 16.441899999335874,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": null
@@ -447,7 +447,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.09930000305757858,
+      "latency_ms": 0.09819999831961468,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."
@@ -463,7 +463,7 @@
       "attempts": 0,
       "repaired": false,
       "provider_calls": 1,
-      "latency_ms": 0.09689999933470972,
+      "latency_ms": 0.09549999958835542,
       "prompt_tokens": 0,
       "completion_tokens": 0,
       "error": "No rule matches this question. Set NL2SQL_PROVIDER=openai to use an LLM."

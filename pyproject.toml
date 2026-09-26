@@ -1,9 +1,12 @@
 [project]
 name = "nl-to-sql-agent"
-version = "0.1.0"
-description = "Schema-aware natural language to SQL agent portfolio project."
+version = "0.2.0"
+description = "Natural-language questions to guarded, read-only SQL, with self-correction and an execution-accuracy eval."
 readme = "README.md"
 requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Vivek Patil" }]
+keywords = ["nl-to-sql", "text-to-sql", "llm", "sql-safety", "duckdb", "fastapi", "evaluation"]
 dependencies = [
     "duckdb>=1.4.0",
     "fastapi>=0.125.0",
@@ -14,6 +17,9 @@ dependencies = [
     "typer>=0.20.0",
     "uvicorn>=0.38.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/vipati/nl-to-sql-agent"
 
 [project.scripts]
 nl-to-sql = "nl_to_sql_agent.cli:app"
@@ -35,3 +41,6 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

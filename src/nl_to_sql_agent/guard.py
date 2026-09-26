@@ -221,7 +221,16 @@ def _check_column(column: exp.Column, scope: Scope, schema: DatabaseSchema) -> S
     ]
     return SchemaIssue("column", column, name, candidates,
                        f"Column '{name}' does not exist in the tables used by this query."
-                       f"{_hint(candidates)}")  # fmt: skip
+                       f"{_hint(candidates) or _elsewhere_hint(name, schema)}")  # fmt: skip
+
+
+def _elsewhere_hint(name: str, schema: DatabaseSchema) -> str:
+    """Point at schema tables the query does not use, e.g. when FROM or a JOIN is missing."""
+    tables = [table.name for table in schema.tables if name.lower() in table.column_names()]
+    if not tables:
+        return ""
+    listed = ", ".join(f"'{table}'" for table in tables)
+    return f" It exists in {listed}; add that table to FROM or a JOIN."
 
 
 def _find_source(scope: Scope, name: str) -> exp.Table | Scope | None:

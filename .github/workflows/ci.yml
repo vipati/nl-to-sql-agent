@@ -2,33 +2,36 @@ name: CI
 
 on:
   push:
+    branches: [master, main]
   pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+      - name: Evaluation (offline rules baseline + safety suite)
+        run: |
+          uv run nl-to-sql eval --output reports/eval-ci.md --min-accuracy 0.4
+          cat reports/eval-ci.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Run tests
-        run: uv run pytest
-
-      - name: Run lint
-        run: uv run ruff check .
-
-      - name: Run evaluation suite
-        run: uv run nl-to-sql eval
-
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t nl-to-sql-agent .
+      - name: Smoke test the container
+        run: |
+          docker run -d --name api -p 8000:8000 nl-to-sql-agent
+          for i in $(seq 1 30); do curl -sf localhost:8000/health && break; sleep 1; done
+          curl -sf localhost:8000/query -H "Content-Type: application/json" \
+            -d '{"question": "How many orders are there in each status?"}' | grep -q '"status":"ok"'
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8000/sql \
+            -H 'Content-Type: application/json' -d '{"sql": "DROP TABLE orders"}')" = "400"

@@ -67,8 +67,12 @@ def evaluate(
         mark = "PASS" if case.correct else "FAIL"
         typer.echo(f"  {mark}  {case.status:<15} {case.latency_ms:8.1f} ms  {case.question}")
 
+    uses_model = agent.provider.name != "rules"
     report = run_evaluation(
-        agent, model=settings.model if agent.provider.name != "rules" else None, progress=progress
+        agent,
+        model=settings.model if uses_model else None,
+        progress=progress,
+        warmup=uses_model,
     )
     markdown = render_markdown(report)
     typer.echo("")

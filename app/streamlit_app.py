@@ -1,5 +1,7 @@
 import pandas as pd
+import sqlglot
 import streamlit as st
+from sqlglot.errors import SqlglotError
 
 from nl_to_sql_agent.agent import Agent, AgentResult
 from nl_to_sql_agent.config import Settings
@@ -19,25 +21,34 @@ def example_questions() -> list[str]:
     return [case.question for case in load_cases()]
 
 
+def pretty(sql: str) -> str:
+    try:
+        statements = sqlglot.transpile(sql, read="duckdb", write="duckdb", pretty=True)
+        return ";\n".join(statements)  # show every statement, including rejected extras
+    except SqlglotError:
+        return sql
+
+
 def show_result(result: AgentResult) -> None:
     rows = result.result.row_count if result.result else 0
     status, attempts, latency, row_count = st.columns(4)
     status.metric("Status", result.status)
     attempts.metric("Attempts", len(result.attempts))
-    latency.metric("Latency", f"{result.latency_ms:.0f} ms")
+    latency.metric("Latency", f"{result.latency_ms:,.1f} ms")
     row_count.metric("Rows", rows)
 
-    if result.sql:
-        st.code(result.sql, language="sql")
+    shown_sql = result.sql or (result.attempts[-1].sql if result.attempts else None)
+    if shown_sql:
+        st.code(pretty(shown_sql), language="sql")
     if result.error:
         st.error(result.error)
 
-    if len(result.attempts) > 1 or (result.attempts and not result.attempts[-1].ok):
-        with st.expander("Attempts", expanded=result.status != "ok"):
+    if len(result.attempts) > 1:
+        with st.expander(f"Attempts ({len(result.attempts)})", expanded=result.status != "ok"):
             for index, attempt in enumerate(result.attempts, start=1):
                 label = "ok" if attempt.ok else f"{attempt.error_kind} error"
                 st.markdown(f"**{index}. {attempt.stage}**: {label}")
-                st.code(attempt.sql, language="sql")
+                st.code(pretty(attempt.sql), language="sql")
                 if attempt.error:
                     st.caption(attempt.error)
 

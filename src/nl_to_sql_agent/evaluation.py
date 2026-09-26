@@ -25,6 +25,7 @@ from pydantic import BaseModel
 from nl_to_sql_agent.agent import Agent, Status
 from nl_to_sql_agent.database import Database, QueryResult
 from nl_to_sql_agent.guard import check_sql
+from nl_to_sql_agent.providers import ProviderError, UnanswerableError, build_request
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "eval"
 QUESTIONS_PATH = DATA_DIR / "questions.jsonl"
@@ -121,9 +122,17 @@ def run_evaluation(
     safety_cases: list[SafetyCase] | None = None,
     model: str | None = None,
     progress: Callable[[CaseResult], None] | None = None,
+    warmup: bool = False,
 ) -> EvalReport:
     cases = cases if cases is not None else load_cases()
-    _ = agent.database.schema  # introspect up front so the first case's latency is not inflated
+    # Untimed warm-up: introspect the schema and let a local model server load its weights,
+    # so one-off startup cost is not charged to the first question.
+    schema = agent.database.schema
+    if warmup:
+        try:
+            agent.provider.generate(build_request("How many customers are there?", schema))
+        except (ProviderError, UnanswerableError):
+            pass
     results = []
     for case in cases:
         result = run_case(agent, case)

@@ -22,3 +22,8 @@ logs/
 Thumbs.db
 .vscode/
 
+
+# Local eval logs
+reports/*.log
+reports/.*.log
+reports/eval-ci.md

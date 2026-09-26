@@ -1,0 +1,26 @@
+# API on :8000 and Streamlit UI on :8501, from the same image.
+# Defaults to the offline rules provider. To use Ollama running on the host:
+#   NL2SQL_PROVIDER=openai NL2SQL_BASE_URL=http://host.docker.internal:11434/v1 docker compose up
+x-env: &env
+  NL2SQL_PROVIDER: ${NL2SQL_PROVIDER:-rules}
+  NL2SQL_BASE_URL: ${NL2SQL_BASE_URL:-http://host.docker.internal:11434/v1}
+  NL2SQL_MODEL: ${NL2SQL_MODEL:-llama3.1:8b}
+  NL2SQL_API_KEY: ${NL2SQL_API_KEY:-}
+
+services:
+  api:
+    build: .
+    environment: *env
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  ui:
+    build: .
+    command: ["streamlit", "run", "app/streamlit_app.py", "--server.address=0.0.0.0", "--server.headless=true"]
+    environment: *env
+    ports:
+      - "8501:8501"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
