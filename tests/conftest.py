@@ -6,6 +6,13 @@ from nl_to_sql_agent.database import Database
 from nl_to_sql_agent.providers import Generation, GenerationRequest, UnanswerableError
 from nl_to_sql_agent.schema import DatabaseSchema
 
+# About 1.7 trillion row combinations: no machine finishes this before the test timeout.
+SLOW_SQL = (
+    "SELECT COUNT(*) FROM order_items a, order_items b, order_items c, order_items d, "
+    "order_items e, order_items f "
+    "WHERE a.quantity + b.quantity + c.quantity + d.quantity + e.quantity > f.quantity * 7"
+)
+
 
 @pytest.fixture(scope="session")
 def database() -> Database:

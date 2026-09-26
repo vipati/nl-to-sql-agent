@@ -3,7 +3,7 @@ from nl_to_sql_agent.config import Settings
 from nl_to_sql_agent.database import Database, sample_database_path
 from nl_to_sql_agent.providers import ProviderError, RulesProvider
 
-from .conftest import ScriptedProvider
+from .conftest import SLOW_SQL, ScriptedProvider
 
 GOOD_SQL = "SELECT status, COUNT(*) AS n FROM orders GROUP BY status"
 
@@ -71,11 +71,7 @@ def test_repairs_are_bounded(database) -> None:
 
 def test_timeouts_are_not_retried() -> None:
     database = Database(sample_database_path(), timeout_seconds=0.2)
-    slow = (
-        "SELECT COUNT(*) FROM order_items a, order_items b, order_items c, order_items d "
-        "WHERE a.quantity + b.quantity + c.quantity > d.quantity"
-    )
-    agent = make_agent(database, slow, GOOD_SQL)
+    agent = make_agent(database, SLOW_SQL, GOOD_SQL)
 
     result = agent.ask("slow question")
 

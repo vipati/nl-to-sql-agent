@@ -1,8 +1,12 @@
+import time
+
 import duckdb
 import pytest
 
 from nl_to_sql_agent.database import Database, QueryTimeoutError, sample_database_path
 from nl_to_sql_agent.schema import format_schema_context
+
+from .conftest import SLOW_SQL
 
 
 def test_execute_returns_json_friendly_rows(database: Database) -> None:
@@ -53,10 +57,11 @@ def test_engine_rejects_writes_and_file_access_without_the_guard(
 
 def test_slow_queries_are_cancelled() -> None:
     database = Database(sample_database_path(), timeout_seconds=0.2)
-    cross_join = "SELECT COUNT(*) FROM order_items a, order_items b, order_items c, order_items d"
+    started = time.perf_counter()
 
     with pytest.raises(QueryTimeoutError, match="timeout"):
-        database.execute(cross_join + " WHERE a.quantity + b.quantity + c.quantity > d.quantity")
+        database.execute(SLOW_SQL)
+    assert time.perf_counter() - started < 5
 
 
 def test_missing_database_file_is_reported(tmp_path) -> None:
